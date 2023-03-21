@@ -149,14 +149,14 @@ namespace TidyingDesktop.UI.Menus
         public static void DisplayFormats()
         {
             Console.WriteLine("--------------------");
-            Console.WriteLine("Formats LOADED: \n");
+            Console.WriteLine("LOADED Formats: \n");
             foreach (var item in DataOperations.SessionTypes)
             {
                 Console.WriteLine(item);
             }
 
             Console.WriteLine("--------------------");
-            Console.WriteLine("Formats ACTUAL: \n");
+            Console.WriteLine("ACTUAL Formats: \n");
             foreach (var item in DataOperations.Types)
             {
                 Console.WriteLine(item);
