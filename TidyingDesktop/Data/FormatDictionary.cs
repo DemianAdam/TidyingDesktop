@@ -125,13 +125,19 @@ namespace TidyingDesktop.Data
                 throw new ArgumentException($"Extension needs to start with a punctuation mark [.]: [{key}].");
             }
 
-            this.dict.TryAdd(key, value);
-            List<string> list = new List<string>
+            if (this.dict.TryAdd(key, value))
+            {
+                List<string> list = new List<string>
                 {
                     value,
                     key,
                 };
-            this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list));
+                this.CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list));
+            }
+            else
+            {
+                throw new ArgumentException($"Extension already belongs to a format: [{key}].");
+            }
         }
 
         /// <summary>
