@@ -8,6 +8,7 @@ namespace TidyingDesktop.StaticClasses
     using System.Globalization;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using System.Text;
     using System.Text.Json;
     using TidyingDesktop.Data;
     using TidyingDesktop.UI.Menus.MainMenu;
@@ -286,6 +287,7 @@ namespace TidyingDesktop.StaticClasses
                 foreach (var file in allfiles)
                 {
                     string path = Path.Combine(destination.FullName, folderName, Path.GetFileName(file.FullName));
+                    path = ChangeFileName(path);
                     File.Move(file.FullName, path);
                     Message?.Invoke($"\t Moving {file.Name} to {folderName}");
                     FileInfo fileInfo = new FileInfo(path);
@@ -319,6 +321,50 @@ namespace TidyingDesktop.StaticClasses
             RefreshQuickAccessFile();
             Thread.Sleep(2000);
             Message?.Invoke($"{dirConfiguration.OriginDirectoryPath} Ordered.");
+        }
+
+        /// <summary>
+        /// Change the file name from filename.xxx to filename(n).xxx if the destination already contains an identical name.
+        /// </summary>
+        /// <param name="file">The directory of the file.</param>
+        /// <returns>The new name of the File.</returns>
+        /// <exception cref="Exception">If the directory or the extensions are null.</exception>
+        public static string ChangeFileName(string file)
+        {
+            string? directory = Path.GetDirectoryName(file);
+            string? fileNameWExtension = Path.GetFileNameWithoutExtension(file);
+            if (string.IsNullOrEmpty(directory))
+            {
+                throw new Exception("Error finding the directory.");
+            }
+
+            if (string.IsNullOrEmpty(fileNameWExtension))
+            {
+                throw new Exception("Error with the extension of the file.");
+            }
+
+            int count = 0;
+            StringBuilder fullPath = new StringBuilder();
+
+            fullPath.Append(file);
+
+            while (File.Exists(fullPath.ToString()))
+            {
+                count++;
+                if (count == 1)
+                {
+                    fullPath.Clear();
+                    fullPath.Append(Path.Combine(directory, fileNameWExtension));
+                    fullPath.Append("(1)");
+                    fullPath.Append(Path.GetExtension(file));
+                }
+                else
+                {
+                    fullPath.Replace($"({count - 1})", $"({count})");
+                }
+            }
+
+            return fullPath.ToString();
         }
 
         /// <summary>
